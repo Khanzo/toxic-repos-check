@@ -39,7 +39,7 @@ def recursive_word_search(root_dir, word_list, extensions=None):
             except (UnicodeDecodeError, PermissionError, FileNotFoundError):
                 # Пропускаем бинарные или недоступные файлы
                 pass
-    with open('resultFind.log', 'w') as f:
+    with open('resultFind.log', 'w', encoding='utf-8') as f:
         for item in result_find:
             f.write(str(item) + '\n')
 
@@ -54,4 +54,5 @@ try:
     print('ok')
 
 except requests.exceptions.RequestException as e:
+
     print(f"Ошибка при скачивании: {e}")
