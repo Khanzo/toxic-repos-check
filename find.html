@@ -1,0 +1,70 @@
+<html lang="ru">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Проверка toxic-package list</title>
+    </head>
+    <body style="padding:40px; marign-top:50px">
+        <button type="button" id="btnExample">Добавить пример проверки</button>
+        <button type="button" id="btnFind">Запуск проверки</button>
+        <br />
+        <label for="findList">Вставьте список пакетов для проверки</label>
+        <br />
+        <textarea id="findList" name="findList" style="width:90%; height: 300px"></textarea>
+        <br />
+        <div id="resultList">
+        </div>
+
+        <script>
+            const button = document.getElementById('btnExample');
+            const findBtn = document.getElementById('btnFind');
+            const textarea = document.getElementById('findList');
+            const divList = document.getElementById('resultList');
+
+            button.addEventListener('click', function() {
+              textarea.value = 'poper\nTerraform\nredoc\nsweetalert';
+            });
+
+            findBtn.addEventListener('click', function() {
+                fetch('https://raw.githubusercontent.com/toxic-repos/toxic-repos/refs/heads/main/data/json/toxic-repos.json')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Ошибка загрузки: ' + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        const lines = textarea.value
+                            .split('\n')
+                            .map(line => line.trim())
+                            .filter(line => line !== '');
+                        
+                        let dataFind = [];
+                        lines.forEach(find => {
+                            data.forEach(element => {
+                               if (element.name.toLowerCase().trim().indexOf(find.toLowerCase().trim()) > -1) {
+                                dataFind.push(element)
+                               }
+                            });
+                        });
+                        divList.innerHTML = '';
+                        dataFind.forEach(element => {
+                            divList.innerHTML +=`
+                            <h4>${element.name}</h4>
+                            <span>${element.description}</span>
+                            <br />
+                            <a href="${element.commit_link}" target="_blank">commit_link</a>
+                            <br />
+                            <hr />
+                            `;
+                        });
+
+                    })
+                    .catch(error => {
+                        throw new Error('Ошибка: ' + error.message);
+                    });
+            });
+
+        </script>
+    </body>
+</html>
